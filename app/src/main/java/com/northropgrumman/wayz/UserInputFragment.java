@@ -19,11 +19,10 @@ public class UserInputFragment extends Fragment {
 
         Button submitButton = rootView.findViewById(R.id.submitButton);
 
-
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.onSubmit();
+                mListener.onUserSubmit();
             }
         });
 
@@ -54,6 +53,6 @@ public class UserInputFragment extends Fragment {
     }
 
     public interface OnUserSubmitInteraction {
-        void onSubmit();
+        void onUserSubmit();
     }
 }
