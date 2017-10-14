@@ -9,6 +9,16 @@ public class Report implements ClusterItem {
     private String mDescription;
     private int weight;
 
+    public Report()
+    {
+        mPosition = null;
+        mTitle = null;
+        mDescription = null;
+        weight = 0;
+    }
+
+
+
     public Report(LatLng mPosition, int weight) {
         this.mPosition = mPosition;
         mTitle = null;
@@ -43,6 +53,8 @@ public class Report implements ClusterItem {
     public String getSnippet() {
         return mDescription;
     }
+
+    public int getWeight() { return weight;}
 
     public void setDescription(String mDescription) {
         this.mDescription = mDescription;
