@@ -172,14 +172,24 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
         //Get number of survivors
         String numZombies = zombieCount.getText().toString();
         int zomCount = Integer.parseInt(numZombies);
-        System.out.println(zomCount);
 
         //Get location description
         //String locationInput = locationDescription.getText().toString();
 
         Report newZom = new Report(location, null, null, zomCount);
 
-        myRef.setValue(newZom);
+        //myRef.child("zomCount").setValue(newZom);
+        LatLng zomLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+
+        //double x = currentLocation.getLatitude();
+        //double y = currentLocation.getLongitude();
+
+        String x = Double.toString(currentLocation.getLatitude());
+        String y = Double.toString(currentLocation.getLongitude());
+        String z = x + y;
+        String u = Integer.toString(zomCount);
+        //myRef.child(mAuth.getCurrentUser().getPhoneNumber()).setValue(newZom);
+        myRef.child("Coordinates").child(u).setValue(z);
 
     }
 }

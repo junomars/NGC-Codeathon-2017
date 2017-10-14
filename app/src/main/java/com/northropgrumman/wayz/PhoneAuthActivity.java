@@ -317,7 +317,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
                 mDetailText.setText(R.string.status_verification_succeeded);
 
                 startActivity(intent);
-                finish();
+               // finish();
                 break;
             case STATE_SIGNIN_FAILED:
                 // No-op, handled by sign-in check
@@ -326,7 +326,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements
             case STATE_SIGNIN_SUCCESS:
                 // Np-op, handled by sign-in check
                 startActivity(intent);
-                finish();
+               // finish();
                 break;
         }
 
