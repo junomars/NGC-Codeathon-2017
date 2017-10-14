@@ -1,7 +1,11 @@
 package com.northropgrumman.wayz;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -12,22 +16,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.northropgrumman.wayz.model.Report;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private HeatmapTileProvider mProvider;
     private GoogleMap mMap;
+    private ClusterManager<Report> mClusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -47,17 +49,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
-//                    mMap.setMyLocationEnabled(true);
+                    mMap.setMyLocationEnabled(true);
 //
-//                    LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//
-//                    String provider = manager.getBestProvider(new Criteria(), true);
-//
-//                    Location currentLocation = manager.getLastKnownLocation(provider);
+                    LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(52.657534, -8.629455)));
+                    String provider = manager.getBestProvider(new Criteria(), true);
 
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+                    Location currentLocation = manager.getLastKnownLocation(provider);
+
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(52.657534, -8.629455)));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-37.81753, 144.9671), 20));
                 } else {
                     this.finish();
                 }
@@ -78,40 +79,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     1);
         }
 
-        // Move camera to current location
-        addHeatMap();
-    }
+        mClusterManager = new ClusterManager<>(this, mMap);
+        mMap.setOnCameraIdleListener(mClusterManager);
 
-    private void addHeatMap() {
-        List<LatLng> list = null;
-
-        // Get the data: latitude/longitude positions of police stations.
         try {
-            list = readItems(R.raw.sample_police_stations);
-            list.addAll(readItems(R.raw.limerick_poi));
+            readItems();
         } catch (JSONException e) {
-            Toast.makeText(this, "Problem reading list of locations.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Problem reading list of markers.", Toast.LENGTH_LONG).show();
         }
-
-        // Create a heat map tile provider, passing it the latlngs of the police stations.
-        mProvider = new HeatmapTileProvider.Builder()
-                .data(list)
-                .build();
-        // Add a tile overlay to the map, using the heat map tile provider.
-        TileOverlay mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
     }
 
-    private ArrayList<LatLng> readItems(int resource) throws JSONException {
-        ArrayList<LatLng> list = new ArrayList<>();
-        InputStream inputStream = getResources().openRawResource(resource);
-        String json = new Scanner(inputStream).useDelimiter("\\A").next();
-        JSONArray array = new JSONArray(json);
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject object = array.getJSONObject(i);
-            double lat = object.getDouble("lat");
-            double lng = object.getDouble("lng");
-            list.add(new LatLng(lat, lng));
-        }
-        return list;
+    private void readItems() throws JSONException {
+        InputStream inputStream = getResources().openRawResource(R.raw.sample_police_stations);
+        List<Report> items = new PersonReportReader().read(inputStream);
+        mClusterManager.addItems(items);
     }
+
+//
+//    private void addHeatMap() {
+//        List<LatLng> list = null;
+//
+//        // Get the data: latitude/longitude positions of police stations.
+//        try {
+//            list = readItems(R.raw.sample_police_stations);
+////            list.addAll(readItems(R.raw.limerick_poi));
+//        } catch (JSONException e) {
+//            Toast.makeText(this, "Problem reading list of locations.", Toast.LENGTH_LONG).show();
+//        }
+//
+//        // Create a heat map tile provider, passing it the latlngs of the police stations.
+//        mProvider = new HeatmapTileProvider.Builder()
+//                .data(list)
+//                .build();
+//        // Add a tile overlay to the map, using the heat map tile provider.
+//        TileOverlay mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+//    }
+//
+//    private ArrayList<LatLng> readItems(int resource) throws JSONException {
+//        ArrayList<LatLng> list = new ArrayList<>();
+//        InputStream inputStream = getResources().openRawResource(resource);
+//        String json = new Scanner(inputStream).useDelimiter("\\A").next();
+//        JSONArray array = new JSONArray(json);
+//        for (int i = 0; i < array.length(); i++) {
+//            JSONObject object = array.getJSONObject(i);
+//            double lat = object.getDouble("lat");
+//            double lng = object.getDouble("lng");
+//            list.add(new LatLng(lat, lng));
+//        }
+//        return list;
+//    }
 }
