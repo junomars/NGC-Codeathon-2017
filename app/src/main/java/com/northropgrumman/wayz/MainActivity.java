@@ -136,7 +136,7 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
 
-        EditText zombieCount = findViewById(R.id.zombieCountInput);
+        EditText zombieCount = findViewById(R.id.survivorCountInput);
         EditText locationDescription = findViewById(R.id.locationDescriptionInput);
 
         //Needs input validation
@@ -153,7 +153,32 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
     }
 
     @Override
-    public void onZombieSubmit() {
+    public void onZombieSubmit()
+    {
+        LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        String provider = manager.getBestProvider(new Criteria(), true);
+
+        @SuppressLint("MissingPermission") Location currentLocation = manager.getLastKnownLocation(provider);
+        LatLng location = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+
+        EditText zombieCount = findViewById(R.id.zombieCountInput);
+        EditText locationDescription = findViewById(R.id.locationDescriptionInput);
+
+        //Needs input validation
+        //Get number of survivors
+        String numZombies = zombieCount.getText().toString();
+        int zomCount = Integer.parseInt(numZombies);
+        System.out.println(zomCount);
+
+        //Get location description
+        //String locationInput = locationDescription.getText().toString();
+
+        Report newZom = new Report(location, null, null, zomCount);
+
+        myRef.setValue(newZom);
 
     }
 }

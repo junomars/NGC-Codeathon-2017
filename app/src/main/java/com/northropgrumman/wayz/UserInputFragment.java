@@ -23,6 +23,7 @@ public class UserInputFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mListener.onUserSubmit();
+
             }
         });
 
