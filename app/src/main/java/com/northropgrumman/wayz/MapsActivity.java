@@ -2,9 +2,6 @@ package com.northropgrumman.wayz;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -15,7 +12,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    private
+    private HeatmapTileProvider mProvider;
     private GoogleMap mMap;
 
     @Override
@@ -48,15 +47,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
-                    mMap.setMyLocationEnabled(true);
+//                    mMap.setMyLocationEnabled(true);
+//
+//                    LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//
+//                    String provider = manager.getBestProvider(new Criteria(), true);
+//
+//                    Location currentLocation = manager.getLastKnownLocation(provider);
 
-                    LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-                    String provider = manager.getBestProvider(new Criteria(), true);
-
-                    Location currentLocation = manager.getLastKnownLocation(provider);
-
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(52.657534, -8.629455)));
 
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(20));
                 } else {
@@ -78,7 +77,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
+
         // Move camera to current location
+        addHeatMap();
     }
 
     private void addHeatMap() {
@@ -86,7 +87,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Get the data: latitude/longitude positions of police stations.
         try {
-            list = readItems();
+            list = readItems(R.raw.sample_police_stations);
+            list.addAll(readItems(R.raw.limerick_poi));
         } catch (JSONException e) {
             Toast.makeText(this, "Problem reading list of locations.", Toast.LENGTH_LONG).show();
         }
@@ -96,11 +98,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .data(list)
                 .build();
         // Add a tile overlay to the map, using the heat map tile provider.
-        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+        TileOverlay mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
     }
 
     private ArrayList<LatLng> readItems(int resource) throws JSONException {
-        ArrayList<LatLng> list = new ArrayList<LatLng>();
+        ArrayList<LatLng> list = new ArrayList<>();
         InputStream inputStream = getResources().openRawResource(resource);
         String json = new Scanner(inputStream).useDelimiter("\\A").next();
         JSONArray array = new JSONArray(json);
