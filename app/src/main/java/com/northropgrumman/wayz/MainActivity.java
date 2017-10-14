@@ -19,16 +19,17 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.northropgrumman.wayz.model.Report;
 
 public class MainActivity extends FragmentActivity implements UserInputFragment.OnUserSubmitInteraction, ZombieUserInput.OnZombieUserSubmitInteraction {
+    public static FirebaseAuth mAuth;
     MapsFragment mapsFragment = new MapsFragment();
     UserInputFragment inputFragment = new UserInputFragment();
     ZombieUserInput zombieFragment = new ZombieUserInput();
     RadioGroup group;
-
     private RadioGroup.OnCheckedChangeListener mOnCheckedChangeListener
             = new RadioGroup.OnCheckedChangeListener() {
         @Override
@@ -133,23 +134,23 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
 
         @SuppressLint("MissingPermission") Location currentLocation = manager.getLastKnownLocation(provider);
         LatLng location = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("survivors");
 
-        EditText zombieCount = findViewById(R.id.survivorCountInput);
+        EditText survivorCount = findViewById(R.id.survivorCountInput);
         EditText locationDescription = findViewById(R.id.locationDescriptionInput);
 
         //Needs input validation
         //Get number of survivors
-        String numSurvivors = zombieCount.getText().toString();
-        int survivorCount = Integer.parseInt(numSurvivors);
+        String numSurvivors = survivorCount.getText().toString();
+        System.out.println(numSurvivors);
+        int survivorCountValue = Integer.parseInt(numSurvivors);
 
         //Get location description
         String locationInput = locationDescription.getText().toString();
 
-        Report newPerson = new Report(location, locationInput, null, survivorCount);
+        Report newPerson = new Report(location, locationInput, "", survivorCountValue);
 
-        myRef.setValue(newPerson);
+        myRef.child(mAuth.getCurrentUser().getPhoneNumber()).setValue(newPerson);
     }
 
     @Override

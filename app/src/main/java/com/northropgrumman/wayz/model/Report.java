@@ -17,18 +17,18 @@ public class Report implements ClusterItem {
         weight = 0;
     }
 
-
-
     public Report(LatLng mPosition, int weight) {
         this.mPosition = mPosition;
         mTitle = null;
         mDescription = null;
+        this.weight = weight;
     }
 
     public Report(LatLng mPosition, String mTitle, String mDescription, int weight) {
         this.mPosition = mPosition;
         this.mTitle = mTitle;
         this.mDescription = mDescription;
+        this.weight = weight;
     }
 
     @Override
