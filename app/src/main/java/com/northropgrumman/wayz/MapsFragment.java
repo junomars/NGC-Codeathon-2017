@@ -183,7 +183,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
                     neighbors.get(vertex).add(new Edge(verticesMedium[row + 1][col], 1));
                 if (row + 1 < coarseness && col + 1 < coarseness)
                     neighbors.get(vertex).add(new Edge(verticesMedium[row + 1][col + 1], 1));
-                dist.put(vertex, Integer.MAX_VALUE - 100000);
+                dist.put(vertex, 100000);
 
                 Log.i("atag", "added: " + vertex.toString());
                 prev.put(vertex, null);
@@ -199,9 +199,24 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
             int weight = zombieThreat.getWeight();
             for (LatLng vertex : vertices) {
                 Location.distanceBetween(vertex.latitude, vertex.longitude, pos.latitude, pos.longitude, distance);
-                if (distance[0] < weight * stepSize) {
+                if (distance[0] < 10) {
                     for (Edge edge : neighbors.get(vertex)) {
-                        edge.weight += distance[0] * stepSize / weight;
+                        edge.weight += distance[0] * stepSize * weight;
+                    }
+                }
+                if (distance[0] < 100) {
+                    for (Edge edge : neighbors.get(vertex)) {
+                        edge.weight += distance[0] * stepSize * weight;
+                    }
+                }
+                if (distance[0] < 300) {
+                    for (Edge edge : neighbors.get(vertex)) {
+                        edge.weight += distance[0] * stepSize * weight;
+                    }
+                }
+                if (distance[0] < 1000) {
+                    for (Edge edge : neighbors.get(vertex)) {
+                        edge.weight += distance[0] * stepSize * weight;
                     }
                 }
             }
@@ -218,7 +233,7 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
             vertex = vertices.iterator().next();
 
             for (LatLng latLng : vertices) {
-                if (dist.get(vertex) < dist.get(latLng)) {
+                if (dist.get(latLng) < dist.get(vertex)) {
                     vertex = latLng;
                 }
             }
@@ -254,11 +269,13 @@ public class MapsFragment extends SupportMapFragment implements OnMapReadyCallba
         ArrayList<LatLng> path = new ArrayList<>();
         LatLng dest = verticesMedium[coarseness - 1][coarseness - 1];
 
+        path.add(0, destination);
         while (prev.get(dest) != null) {
             path.add(0, dest);
             dest = prev.get(dest);
         }
         path.add(0, dest);
+        path.add(0, start);
 
         return path;
     }
