@@ -47,6 +47,12 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
                     }
                     return true;
                 case R.id.navigation_zombies:
+                    if (!inputFragment.isVisible()) {
+                        inputFragment.setArguments(getIntent().getExtras());
+                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.fragment_container, inputFragment);
+                        transaction.commit();
+                    }
 
                     return true;
             }
@@ -68,7 +74,7 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-//        navigation.setSelectedItemId(R.id.navigation_maps);
+        navigation.setSelectedItemId(R.id.navigation_maps);
     }
 
     @Override
