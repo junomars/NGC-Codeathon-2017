@@ -14,7 +14,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -41,11 +40,14 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
         public void onCheckedChanged(RadioGroup radioGroup, int i) {
             switch (radioGroup.getCheckedRadioButtonId()) {
                 case R.id.map_people:
-                    // Get list of data
-                    // Update map stuff
+                    // Get list of people
+                    mapsFragment.updateMap("people");
                     break;
                 case R.id.map_zombies:
-                    Toast.makeText(getApplicationContext(), "Pressed zombies", Toast.LENGTH_SHORT).show();
+                    mapsFragment.updateMap("zombies");
+                    break;
+                case R.id.map_route:
+                    mapsFragment.updateMap("route");
                     break;
                 default:
                     Toast.makeText(getApplicationContext(), "" + radioGroup.getCheckedRadioButtonId(), Toast.LENGTH_SHORT).show();
@@ -112,7 +114,6 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
         group.setOnCheckedChangeListener(mOnCheckedChangeListener);
 
         navigation.setSelectedItemId(R.id.navigation_maps);
-        ((RadioButton) findViewById(R.id.map_people)).setChecked(true);
 
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
         myRef.child("zombies").addValueEventListener(new ValueEventListener() {

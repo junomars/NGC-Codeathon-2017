@@ -59,9 +59,9 @@
         android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#f44141"
         android:drawableTint="@color/colorAccent"
         android:text="Submit"
-        android:background="#f44141"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -70,16 +70,4 @@
 
 
     />
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <resources>
-        <color android:name="opaque_red">#f00</color>
-        <color android:name="translucent_red">#80ff0000</color>
-    </resources>
-
-    Resources res = getResources();
-    int color = res.getColor(R.color.opaque_red);
-
-
-
 </android.support.constraint.ConstraintLayout>

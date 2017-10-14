@@ -43,6 +43,7 @@ dependencies {
     compile "com.google.firebase:firebase-database:${versions.firebase}"
 
     compile 'com.google.maps.android:android-maps-utils:0.5'
+    compile 'com.akexorcist:googledirectionlibrary:1.0.5'
 }
 
 
