@@ -33,12 +33,23 @@
             android:layout_height="match_parent"
             android:text="@string/map_style_zombies"
             android:textColor="@color/colorAccent" />
+
+        <RadioButton
+            android:id="@+id/map_route"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Route to point"
+            android:textColor="@color/colorAccent" />
     </RadioGroup>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@id/navigation"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"

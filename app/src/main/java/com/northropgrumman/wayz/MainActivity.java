@@ -20,8 +20,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.northropgrumman.wayz.model.Report;
 
 public class MainActivity extends FragmentActivity implements UserInputFragment.OnUserSubmitInteraction, ZombieUserInput.OnZombieUserSubmitInteraction {
@@ -30,6 +33,8 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
     UserInputFragment inputFragment = new UserInputFragment();
     ZombieUserInput zombieFragment = new ZombieUserInput();
     RadioGroup group;
+    int count = 0;
+
     private RadioGroup.OnCheckedChangeListener mOnCheckedChangeListener
             = new RadioGroup.OnCheckedChangeListener() {
         @Override
@@ -108,6 +113,19 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
 
         navigation.setSelectedItemId(R.id.navigation_maps);
         ((RadioButton) findViewById(R.id.map_people)).setChecked(true);
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+        myRef.child("zombies").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                count = (int) dataSnapshot.getChildrenCount();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -188,8 +206,12 @@ public class MainActivity extends FragmentActivity implements UserInputFragment.
         String y = Double.toString(currentLocation.getLongitude());
         String z = x + y;
         String u = Integer.toString(zomCount);
+
+        Report zombieReport = new Report(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), zomCount);
+
+
         //myRef.child(mAuth.getCurrentUser().getPhoneNumber()).setValue(newZom);
-        myRef.child("Coordinates").child(u).setValue(z);
+        myRef.child("zombies").child("" + count).setValue(zombieReport);
 
     }
 }
