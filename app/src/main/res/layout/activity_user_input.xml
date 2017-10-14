@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#42f4e5"
+    android:background="#0288D1"
     tools:context="com.northropgrumman.wayz.UserInputFragment">
 
     <TextView
